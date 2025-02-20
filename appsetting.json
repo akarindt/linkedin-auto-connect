@@ -1,0 +1,65 @@
+{
+  "firefox": {
+    "path": "",
+    "profile": ""
+  },
+  "common": {
+    "title": "Linkedin Tools",
+    "geoUrn": 104195383,
+    "keyword": "People on Linkedin",
+    "menu": [
+        {
+            "message": "Connect with recruiters",
+            "action": "R"
+        },
+        {
+            "message": "Connect with people with same interest",
+            "action": "P"
+        },
+        {
+            "message": "Connect with people & recruiters",
+            "action": "B"
+        },
+        {
+            "message": "Follow recruiters",
+            "action": "FR"
+        },
+        {
+            "message": "Follow people with same interest",
+            "action": "FP"
+        },
+        {
+            "message": "Follow both people & recruiters",
+            "action": "FB"
+        }
+    ],
+    "recruiter_synonyms": [
+      "headhunter",
+      "talent scout",
+      "hiring manager",
+      "employment agent",
+      "staffing specialist",
+      "hr recruiter",
+      "job scout",
+      "workforce coordinator",
+      "placement officer",
+      "personnel officer",
+      "talent acquisition specialist",
+      "recruitment consultant",
+      "employment recruiter",
+      "hr sourcer",
+      "staffing coordinator",
+      "career agent",
+      "hiring specialist",
+      "manpower agent",
+      "talent broker",
+      "workforce planner",
+      "job placement coordinator",
+      "onboarding specialist",
+      "employment specialist",
+      "staffing manager",
+      "recruitment officer",
+      "executive recruiter"
+    ]
+  }
+}
