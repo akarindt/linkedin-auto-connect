@@ -1,27 +1,27 @@
 {
-  "name": "linkedin-auto-connect",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "type": "module",
-  "scripts": {
-    "build": "tsc"
-  },
-  "dependencies": {
-    "chalk": "^5.4.1",
-    "chalk-animation": "^2.0.3",
-    "dotenv": "^16.4.7",
-    "figlet": "^1.8.0",
-    "gradient-string": "^3.0.0",
-    "inquirer": "^12.4.2",
-    "nanospinner": "^1.2.2",
-    "node-json-db": "^2.3.1",
-    "puppeteer-core": "^24.2.1"
-  },
-  "devDependencies": {
-    "@types/chalk-animation": "^1.6.3",
-    "@types/figlet": "^1.7.0",
-    "typescript": "^5.5.3"
-  },
-  "private": true
+    "name": "linkedin-auto-connect",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "type": "module",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "chalk": "^5.4.1",
+        "chalk-animation": "^2.0.3",
+        "dotenv": "^16.4.7",
+        "figlet": "^1.8.0",
+        "gradient-string": "^3.0.0",
+        "inquirer": "^12.4.2",
+        "nanospinner": "^1.2.2",
+        "node-json-db": "^2.3.1",
+        "puppeteer-core": "^24.2.1"
+    },
+    "devDependencies": {
+        "@types/chalk-animation": "^1.6.3",
+        "@types/figlet": "^1.7.0",
+        "typescript": "^5.5.3"
+    },
+    "private": true
 }
