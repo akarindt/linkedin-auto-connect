@@ -2,6 +2,7 @@ import { JsonDB } from 'node-json-db';
 import puppeteer, { Browser } from 'puppeteer-core';
 import { ChromeJson } from './type';
 import Utils from './utils';
+import Constants from './constants';
 
 export default class Connect {
     private _db: JsonDB;
@@ -58,20 +59,20 @@ export default class Connect {
             await page.setUserAgent(userAgent);
             await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-            const selector = 'ul.QmaXNibFNnmfZhzuZAOVbPKlMXxtsSlvQn li.ypvdbbHqnyMugzFsPQMcnlxliOdDzJqbvXk';
+            const selector = Constants.PROFILE_SELECTOR;
 
             await page.waitForSelector(selector);
 
             const profiles = await page.$$(selector);
             for (let profile of profiles) {
-                const jobEl = await profile.$('div.UdeETnABQvIppekSDgUDqYjdbwKckGbeMxBpPMCbs div.jdmlnVJSvjBqiVHBSlDbIrxKnvkAVIyHg');
+                const jobEl = await profile.$(Constants.JOB_SELECTOR);
                 if (!jobEl) continue;
 
                 const job = await jobEl.evaluate((node) => node.textContent?.trim().toLowerCase().replace(/ /g, ''));
                 if (!job) continue;
                 if (!Utils.containsSubstring(job, recruiterSynonyms)) continue;
 
-                const connectButtonSelector = 'button[id^="ember"][aria-label^="Invite"]';
+                const connectButtonSelector = Constants.CONNECT_BUTTON_SELECTOR;
                 await page.waitForSelector(connectButtonSelector, { visible: true });
 
                 const connectButtonEl = await profile.$(connectButtonSelector);
@@ -84,7 +85,7 @@ export default class Connect {
 
                 await connectButtonEl.click();
 
-                const addNoteSelector = 'button[id^="ember"][aria-label^="Add"]';
+                const addNoteSelector = Constants.ADD_NOTE_SELECTOR;
                 await page.waitForSelector(addNoteSelector, { visible: true });
 
                 const addNoteButton = await page.$(addNoteSelector);
@@ -93,7 +94,7 @@ export default class Connect {
                 await Utils.sleep(2000);
                 await addNoteButton.click();
 
-                const textAreaSelector = 'textarea[name="message"]#custom-message';
+                const textAreaSelector = Constants.TEXTAREA_SELECTOR;
                 await page.waitForSelector(textAreaSelector, { visible: true });
 
                 const textarea = await page.$(textAreaSelector);
@@ -105,7 +106,7 @@ export default class Connect {
                 }, messageTemplate);
                 await textarea.evaluate((node) => node.blur());
 
-                const sendButtonSelector = 'button[id^="ember"][aria-label="Send invitation"]';
+                const sendButtonSelector = Constants.SEND_BUTTON_SELECTOR;
                 await page.waitForSelector(sendButtonSelector, { visible: true });
 
                 const sendButton = await page.$(sendButtonSelector);
@@ -119,11 +120,12 @@ export default class Connect {
             await this.Close(browser);
             currentPage++;
         }
-
         return;
     }
 
-    public async People() {}
+    public async People() {
+        
+    }
 
     public async Both() {}
 }

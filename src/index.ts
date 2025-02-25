@@ -5,8 +5,8 @@ import { passion } from 'gradient-string';
 import figlet from 'figlet';
 import { JsonDB, Config } from 'node-json-db';
 import { ChromeJson, MenuItem } from './type';
-import Connect from './connect.action';
-import Follow from './follow.action';
+import Connect from './connect';
+import Follow from './follow';
 import Utils from './utils';
 
 const db = new JsonDB(new Config('appsetting', true, false, '/'));
