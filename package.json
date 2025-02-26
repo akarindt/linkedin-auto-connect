@@ -1,5 +1,5 @@
 {
-    "name": "@akari/linkedin-auto-connect",
+    "name": "linkedin-auto-connect",
     "version": "0.0.1",
     "description": "Auto connect or follow people on Linkedin",
     "main": "dist/index.js",
@@ -31,5 +31,8 @@
         "linkedin",
         "automation",
         "scraping"
-    ]
+    ],
+    "publishConfig": {
+        "access": "public"
+    }
 }
