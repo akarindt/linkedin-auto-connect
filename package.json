@@ -7,6 +7,9 @@
     "types": "dis/index.d.ts",
     "type": "module",
     "license": "MIT",
+    "author": {
+        "name": "Akari"
+    },
     "scripts": {
         "build": "tsup"
     },
@@ -24,7 +27,6 @@
         "tsup": "^8.4.0",
         "typescript": "^5.5.3"
     },
-    "private": true,
     "keywords": [
         "linkedin",
         "automation",
