@@ -11,7 +11,7 @@
         "name": "Akari"
     },
     "scripts": {
-        "build": "tsup --publicDir"
+        "build": "tsup && cp appsetting.json dist/"
     },
     "dependencies": {
         "chalk": "^5.4.1",
