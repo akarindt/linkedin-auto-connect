@@ -41,91 +41,103 @@ export default class Connect {
         return;
     }
 
-    public async Recuiters() {
+    private async Connect(type: 'people' | 'recruiter' | 'both') {
         const userAgent: string = await this._db.getData('/common/default_user_agent');
-        const linkedinBaseUrl: string = await this._db.getData('/common/linkedin_base_url');
         const keyword: string = await this._db.getData('/common/keyword');
-        const messageTemplate: string = await this._db.getData('/common/message_template');
-        const geoUrn: number[] = await this._db.getData('/common/geo_urn');
-        const recruiterSynonyms: string[] = await this._db.getData('/common/recruiter_synonyms');
-        let currentPage: number = await this._db.getData('/common/default_start_page');
         const endPage: number = await this._db.getData('/common/default_end_page');
+        const geoUrn: number[] = await this._db.getData('/common/geo_urn');
+        let currentPage: number = await this._db.getData('/common/default_start_page');
+        const linkedinBaseUrl: string = await this._db.getData('/common/linkedin_base_url');
+        const messageTemplate: string = await this._db.getData('/common/message_template');
+        const recruiterSynonyms: string[] = await this._db.getData('/common/recruiter_synonyms');
+        let breakLoop = false;
 
-        while (currentPage <= endPage) {
-            const url = `${linkedinBaseUrl}/?geoUrn=[${geoUrn.map((item) => `"${item}"`).join(',')}]&keywords=${keyword}&page=${currentPage}`;
+        const browser = await this.Init();
+        const page = await browser.newPage();
+        await page.setUserAgent(userAgent);
 
-            const browser = await this.Init();
-            const page = await browser.newPage();
-            await page.setUserAgent(userAgent);
-            await page.goto(url, { waitUntil: 'domcontentloaded' });
+        try {
+            while (currentPage <= endPage && !breakLoop) {
+                const url = `${linkedinBaseUrl}/?geoUrn=[${geoUrn.map((item) => `"${item}"`).join(',')}]&keywords=${keyword}&page=${currentPage}`;
+                await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-            const selector = Constants.PROFILE_SELECTOR;
+                const selector = Constants.PROFILE_SELECTOR;
+                await page.waitForSelector(selector);
 
-            await page.waitForSelector(selector);
+                const profiles = await page.$$(selector);
+                for (const profile of profiles) {
+                    if (type !== 'both') {
+                        const jobEl = await profile.$(Constants.JOB_SELECTOR);
+                        if (!jobEl) continue;
 
-            const profiles = await page.$$(selector);
-            for (let profile of profiles) {
-                const jobEl = await profile.$(Constants.JOB_SELECTOR);
-                if (!jobEl) continue;
+                        const job = await jobEl.evaluate((node) => node.textContent?.trim().toLowerCase().replace(/ /g, ''));
+                        if (!job) continue;
 
-                const job = await jobEl.evaluate((node) => node.textContent?.trim().toLowerCase().replace(/ /g, ''));
-                if (!job) continue;
-                if (!Utils.containsSubstring(job, recruiterSynonyms)) continue;
+                        if (type === 'recruiter' && !Utils.containsSubstring(job, recruiterSynonyms)) continue;
+                        if (type === 'people' && Utils.containsSubstring(job, recruiterSynonyms)) continue;
+                    }
 
-                const connectButtonSelector = Constants.CONNECT_BUTTON_SELECTOR;
-                await page.waitForSelector(connectButtonSelector, { visible: true });
+                    await page.waitForSelector(Constants.CONNECT_BUTTON_SELECTOR, { visible: true });
 
-                const connectButtonEl = await profile.$(connectButtonSelector);
-                if (!connectButtonEl) continue;
+                    const connectButtonEl = await profile.$(Constants.CONNECT_BUTTON_SELECTOR);
+                    if (!connectButtonEl) continue;
 
-                const connectButton = await connectButtonEl.evaluate((node) => node.textContent?.trim().toLowerCase());
-                if (connectButton == 'follow') continue;
+                    await Utils.sleep(Utils.randomArray(Constants.DELAY_TIME));
+                    await connectButtonEl.click();
 
-                await Utils.sleep(2000);
+                    await page.waitForSelector(Constants.ADD_NOTE_SELECTOR, { visible: true });
+                    const addNoteButton = await page.$(Constants.ADD_NOTE_SELECTOR);
+                    if (!addNoteButton) continue;
 
-                await connectButtonEl.click();
+                    await Utils.sleep(Utils.randomArray(Constants.DELAY_TIME));
+                    await addNoteButton.click();
 
-                const addNoteSelector = Constants.ADD_NOTE_SELECTOR;
-                await page.waitForSelector(addNoteSelector, { visible: true });
+                    await page.waitForSelector(Constants.MODAL_UPSALE, { visible: true });
+                    const modalUpsale = await page.$(Constants.MODAL_UPSALE);
+                    if (modalUpsale) {
+                        console.log(Constants.OUT_OF_FREE_CONNECT_MSG);
+                        breakLoop = true;
+                        return;
+                    }
 
-                const addNoteButton = await page.$(addNoteSelector);
-                if (!addNoteButton) continue;
+                    await page.waitForSelector(Constants.TEXTAREA_SELECTOR, { visible: true });
+                    const textarea = await page.$(Constants.TEXTAREA_SELECTOR);
+                    if (!textarea) continue;
 
-                await Utils.sleep(2000);
-                await addNoteButton.click();
+                    await Utils.sleep(Utils.randomArray(Constants.DELAY_TIME));
+                    await textarea.evaluate((node, messageTemplate) => {
+                        node.value = messageTemplate;
+                    }, messageTemplate);
+                    await textarea.evaluate((node) => node.blur());
 
-                const textAreaSelector = Constants.TEXTAREA_SELECTOR;
-                await page.waitForSelector(textAreaSelector, { visible: true });
+                    await page.waitForSelector(Constants.SEND_BUTTON_SELECTOR, { visible: true });
+                    const sendButton = await page.$(Constants.SEND_BUTTON_SELECTOR);
+                    if (!sendButton) continue;
 
-                const textarea = await page.$(textAreaSelector);
-                if (!textarea) continue;
+                    await Utils.sleep(Utils.randomArray(Constants.DELAY_TIME));
+                    await sendButton.evaluate((node) => node.click());
+                }
 
-                await Utils.sleep(2000);
-                await textarea.evaluate((node, messageTemplate) => {
-                    node.value = messageTemplate;
-                }, messageTemplate);
-                await textarea.evaluate((node) => node.blur());
-
-                const sendButtonSelector = Constants.SEND_BUTTON_SELECTOR;
-                await page.waitForSelector(sendButtonSelector, { visible: true });
-
-                const sendButton = await page.$(sendButtonSelector);
-                if (!sendButton) continue;
-
-                await Utils.sleep(2000);
-                await sendButton.evaluate((node) => node.click());
+                await Utils.sleep(Utils.randomArray(Constants.DELAY_TIME));
+                currentPage++;
             }
-
-            await Utils.sleep(2000);
+        } catch (error) {
+            console.log(error);
+        } finally {
             await this.Close(browser);
-            currentPage++;
         }
         return;
     }
 
-    public async People() {
-        
+    public async Recruiters() {
+        return await this.Connect('recruiter');
     }
 
-    public async Both() {}
+    public async People() {
+        return await this.Connect('people');
+    }
+
+    public async Both() {
+        return await this.Connect('both');
+    }
 }

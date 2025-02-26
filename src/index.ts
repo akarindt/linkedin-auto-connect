@@ -7,29 +7,30 @@ import { JsonDB, Config } from 'node-json-db';
 import { ChromeJson, MenuItem } from './type';
 import Connect from './connect';
 import Follow from './follow';
-import Utils from './utils';
+import fs from 'fs';
 
 const db = new JsonDB(new Config('appsetting', true, false, '/'));
 
 const menu = async () => {
     const title: string = await db.getData('/common/title');
 
-    figlet(title, (_, data) => {
+    await figlet(title, (_, data) => {
         console.log(passion.multiline(data || ''));
     });
-
-    await Utils.sleep(1000);
 
     const firstTimeSetupMenu: MenuItem[] = await db.getData('/common/first_time_setup_menu');
 
     const chromeJson: ChromeJson = await db.getData('/chromeBrowser');
-    if (chromeJson.path == '' || chromeJson.profile == '') {
+    if (chromeJson.path === '' || chromeJson.profile === '') {
         const firstTimeSetupPrompt = await inquirer.prompt(
             firstTimeSetupMenu.map((item) => {
                 return {
                     type: 'input',
                     message: item.message,
                     name: item.name,
+                    validate: (input) => {
+                        return fs.existsSync(input);
+                    },
                 };
             })
         );
@@ -53,14 +54,39 @@ const menu = async () => {
         }),
     });
 
-    startSection(mainMenuPrompt['action']);
+    const pagePrompt = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'startPage',
+            message: 'Input start page',
+            default: '1',
+            validate: (input) => {
+                return (input as unknown as number) > 0;
+            },
+        },
+        {
+            type: 'input',
+            name: 'endPage',
+            message: 'Input end page',
+            default: '5',
+            validate: (input) => {
+                return (input as unknown as number) > 0;
+            },
+        },
+    ]);
+
+    const startPage = pagePrompt['startPage'] as number;
+    const endPage = pagePrompt['endPage'] as number;
+
+    await Promise.all([await db.push('/common/default_start_page', startPage, false), await db.push('/common/default_end_page', endPage, false)]);
+    await startSection(mainMenuPrompt['action']);
     return;
 };
 
 const startSection = async (option: string) => {
     switch (option) {
         case 'R':
-            await new Connect(db).Recuiters();
+            await new Connect(db).Recruiters();
             break;
         case 'P':
             await new Connect(db).People();
@@ -69,7 +95,7 @@ const startSection = async (option: string) => {
             await new Connect(db).Both();
             break;
         case 'FR':
-            await new Follow(db).Recuiters();
+            await new Follow(db).Recruiters();
             break;
         case 'FP':
             await new Follow(db).People();
@@ -89,8 +115,6 @@ const clearSetting = async () => {
     await menu();
 };
 
-const main = async () => {
-    await menu();
-};
-
-await main();
+try {
+    menu();
+} catch (error) {}

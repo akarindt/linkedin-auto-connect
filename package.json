@@ -1,28 +1,33 @@
 {
-    "name": "linkedin-auto-connect",
-    "version": "1.0.0",
-    "description": "Auto connect or follow people on Linkedin :D",
+    "name": "@akari/linkedin-auto-connect",
+    "version": "0.0.1",
+    "description": "Auto connect or follow people on Linkedin",
     "main": "dist/index.js",
+    "module": "dist/index.mjs",
+    "types": "dis/index.d.ts",
     "type": "module",
     "license": "MIT",
     "scripts": {
-        "build": "tsc"
+        "build": "tsup"
     },
     "dependencies": {
         "chalk": "^5.4.1",
-        "chalk-animation": "^2.0.3",
-        "dotenv": "^16.4.7",
         "figlet": "^1.8.0",
         "gradient-string": "^3.0.0",
         "inquirer": "^12.4.2",
-        "nanospinner": "^1.2.2",
         "node-json-db": "^2.3.1",
         "puppeteer-core": "^24.2.1"
     },
     "devDependencies": {
-        "@types/chalk-animation": "^1.6.3",
+        "@changesets/cli": "^2.28.1",
         "@types/figlet": "^1.7.0",
+        "tsup": "^8.4.0",
         "typescript": "^5.5.3"
     },
-    "private": true
+    "private": true,
+    "keywords": [
+        "linkedin",
+        "automation",
+        "scraping"
+    ]
 }

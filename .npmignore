@@ -9,6 +9,7 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+/src
 
-/dist
-.DS_Store
+tsconfig.json
+tsup.config.json
