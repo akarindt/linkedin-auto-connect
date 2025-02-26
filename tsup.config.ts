@@ -6,5 +6,5 @@ export default defineConfig({
     shims: true,
     skipNodeModulesBundle: true,
     clean: true,
-    entry: ['./src/**/*.ts']
-})
+    entry: ['./src/**/*.ts'],
+});

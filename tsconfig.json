@@ -8,7 +8,7 @@
         "skipLibCheck": true,
         "outDir": "dist",
         "moduleResolution": "node",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
     },
     "include": ["src"],
     "exclude": ["dist", "node_modules"]
