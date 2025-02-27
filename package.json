@@ -1,6 +1,6 @@
 {
-    "name": "akari-linkedin-auto-connect",
-    "version": "1.0.0",
+    "name": "akari-linkedin-auto-connect-v2",
+    "version": "1.0.1",
     "description": "Auto connect or follow people on Linkedin",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -39,6 +39,6 @@
         "access": "public"
     },
     "bin": {
-        "akari-linkedin-auto-connect": "./dist/index.js"
+        "akari-linkedin-auto-connect-v2": "./dist/index.js"
     }
 }
