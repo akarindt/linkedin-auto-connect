@@ -1,6 +1,6 @@
 {
     "name": "akari-linkedin-auto-connect-v2",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Auto connect or follow people on Linkedin",
     "main": "dist/index.js",
     "module": "dist/index.mjs",

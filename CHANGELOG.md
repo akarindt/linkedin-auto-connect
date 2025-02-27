@@ -1,5 +1,11 @@
 # akari-linkedin-auto-connect
 
+## 1.0.2
+
+### Patch Changes
+
+-   Change appsetting.json
+
 ## 1.0.1
 
 ### Patch Changes
