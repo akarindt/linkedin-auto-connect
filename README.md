@@ -6,6 +6,15 @@ Automatically connect & follow with people on LinkedIn, for your business, or fo
 - Find & follow with recuiters/people with same interest.
 - Export file to .xlsx (Will update in the future).
 
+## Requirements
+- You actually need to install [Chrome](https://www.google.com/chrome/)
+
+## Usage
+To use this project, just use:
+```
+npx akari-linkedin-auto-connect
+```
+
 ## Before using this:
  - This is just a side project for learning purpose.
  - By using this, there is a chance that LinkedIn will ban your account, and I'm not responsible for that.

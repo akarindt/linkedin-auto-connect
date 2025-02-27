@@ -44,9 +44,9 @@ export default class Connect {
     private async Connect(type: 'people' | 'recruiter' | 'both') {
         const userAgent: string = await this._db.getData('/common/default_user_agent');
         const keyword: string = await this._db.getData('/common/keyword');
-        const endPage: number = await this._db.getData('/common/default_end_page');
+        const endPage: number = parseInt(await this._db.getData('/common/default_end_page'));
+        let currentPage: number = parseInt(await this._db.getData('/common/default_start_page'));
         const geoUrn: number[] = await this._db.getData('/common/geo_urn');
-        let currentPage: number = await this._db.getData('/common/default_start_page');
         const linkedinBaseUrl: string = await this._db.getData('/common/linkedin_base_url');
         const messageTemplate: string = await this._db.getData('/common/message_template');
         const recruiterSynonyms: string[] = await this._db.getData('/common/recruiter_synonyms');

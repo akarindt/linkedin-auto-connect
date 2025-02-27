@@ -1,6 +1,6 @@
 {
     "name": "akari-linkedin-auto-connect",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "description": "Auto connect or follow people on Linkedin",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
@@ -11,14 +11,16 @@
         "name": "Akari"
     },
     "scripts": {
-        "build": "tsup && cp appsetting.json dist/"
+        "build": "tsup"
     },
     "dependencies": {
         "chalk": "^5.4.1",
+        "exceljs": "^4.4.0",
         "figlet": "^1.8.0",
         "gradient-string": "^3.0.0",
         "inquirer": "^12.4.2",
         "node-json-db": "^2.3.1",
+        "open": "^10.1.0",
         "puppeteer-core": "^24.2.1"
     },
     "devDependencies": {
@@ -37,6 +39,6 @@
         "access": "public"
     },
     "bin": {
-        "akari-lkd-ac": "./dist/index.js"
+        "akari-linkedin-auto-connect": "./dist/index.js"
     }
 }

@@ -1,4 +1,4 @@
-name: deploy
+name: Publish
 on:
     push:
         branches:
@@ -18,10 +18,8 @@ jobs:
               with:
                   node-version: '20'
                   registry-url: 'https://registry.npmjs.org'
-
             - run: npm ci
             - run: npm run build
-
             - uses: JS-DevTools/npm-publish@v3
               with:
                   token: ${{ secrets.NPM_TOKEN }}

@@ -5,11 +5,17 @@ import { passion } from 'gradient-string';
 import figlet from 'figlet';
 import { JsonDB, Config } from 'node-json-db';
 import { ChromeJson, MenuItem } from './type';
+import { fileURLToPath } from 'url';
 import Connect from './connect';
 import Follow from './follow';
+import Excel from './excel';
 import fs from 'fs';
+import path from 'path';
 
-const db = new JsonDB(new Config('appsetting', true, false, '/'));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const db = new JsonDB(new Config(path.join(__dirname, '../appsetting.json'), true, false, '/'));
 
 const menu = async () => {
     const title: string = await db.getData('/common/title');
@@ -54,31 +60,34 @@ const menu = async () => {
         }),
     });
 
-    const pagePrompt = await inquirer.prompt([
-        {
-            type: 'input',
-            name: 'startPage',
-            message: 'Input start page',
-            default: '1',
-            validate: (input) => {
-                return (input as unknown as number) > 0;
+    if (mainMenuPrompt['action'] !== 'C') {
+        const pagePrompt = await inquirer.prompt([
+            {
+                type: 'input',
+                name: 'startPage',
+                message: 'Input start page',
+                default: '1',
+                validate: (input) => {
+                    return (input as unknown as number) > 0;
+                },
             },
-        },
-        {
-            type: 'input',
-            name: 'endPage',
-            message: 'Input end page',
-            default: '5',
-            validate: (input) => {
-                return (input as unknown as number) > 0;
+            {
+                type: 'input',
+                name: 'endPage',
+                message: 'Input end page',
+                default: '5',
+                validate: (input) => {
+                    return (input as unknown as number) > 0;
+                },
             },
-        },
-    ]);
+        ]);
 
-    const startPage = pagePrompt['startPage'] as number;
-    const endPage = pagePrompt['endPage'] as number;
+        const startPage = pagePrompt['startPage'] as number;
+        const endPage = pagePrompt['endPage'] as number;
 
-    await Promise.all([await db.push('/common/default_start_page', startPage, false), await db.push('/common/default_end_page', endPage, false)]);
+        await Promise.all([await db.push('/common/default_start_page', startPage, false), await db.push('/common/default_end_page', endPage, false)]);
+    }
+
     await startSection(mainMenuPrompt['action']);
     return;
 };
@@ -103,6 +112,12 @@ const startSection = async (option: string) => {
         case 'FB':
             await new Follow(db).Both();
             break;
+        case 'ER':
+            await new Excel(db).Recruiter();
+            break;
+        case 'EP':
+            await new Excel(db).People();
+            break;
         case 'C':
             await clearSetting();
             break;
@@ -111,6 +126,7 @@ const startSection = async (option: string) => {
 
 const clearSetting = async () => {
     await db.push('/chromeBrowser', { path: '', profile: '' });
+    await Promise.all([await db.push('/common/default_start_page', '1', false), await db.push('/common/default_end_page', '5', false)]);
     console.clear();
     await menu();
 };

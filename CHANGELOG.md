@@ -1,5 +1,11 @@
 # akari-linkedin-auto-connect
 
+## 1.0.0
+
+### Major Changes
+
+-   Fix errors & add export to xlsx functions
+
 ## 0.0.3
 
 ### Patch Changes
