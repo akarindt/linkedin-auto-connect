@@ -164,7 +164,7 @@ const clearSetting = async () => {
 };
 
 try {
-    await menu();
+    menu();
 } catch (error) {
     console.log(error);
 }
