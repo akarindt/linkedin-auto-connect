@@ -1,33 +1,32 @@
 #!/usr/bin/env node
 
 import inquirer from 'inquirer';
-import { passion } from 'gradient-string';
+import { passion, cristal } from 'gradient-string';
 import figlet from 'figlet';
 import { JsonDB, Config } from 'node-json-db';
-import { ChromeJson, MenuItem } from './type';
+import { MenuItem } from './type';
 import { fileURLToPath } from 'url';
 import Connect from './connect';
 import Follow from './follow';
 import Excel from './excel';
 import fs from 'fs';
 import path from 'path';
+import BrowserInit from './browser';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const db = new JsonDB(new Config(path.join(__dirname, '../appsetting.json'), true, false, '/'));
 
 const menu = async () => {
     const title: string = await db.getData('/common/title');
-
     await figlet(title, (_, data) => {
         console.log(passion.multiline(data || ''));
     });
 
-    const firstTimeSetupMenu: MenuItem[] = await db.getData('/common/first_time_setup_menu');
+    const browserInit = new BrowserInit(db);
+    if (!(await browserInit.FindBrowser())) {
+        const firstTimeSetupMenu: MenuItem[] = await db.getData('/common/first_time_setup_menu');
 
-    const chromeJson: ChromeJson = await db.getData('/chromeBrowser');
-    if (chromeJson.path === '' || chromeJson.profile === '') {
         const firstTimeSetupPrompt = await inquirer.prompt(
             firstTimeSetupMenu.map((item) => {
                 return {
@@ -41,10 +40,8 @@ const menu = async () => {
             })
         );
 
-        const path = firstTimeSetupPrompt['InstallationLocation'];
-        const profilePath = firstTimeSetupPrompt['ChromeProfile'];
-
-        await db.push('/chromeBrowser', { path, profile: profilePath });
+        const installPath = firstTimeSetupPrompt['InstallationLocation'];
+        await db.push('/browser', { path, default: path.parse(installPath).name });
     }
 
     const mainMenuItems: MenuItem[] = await db.getData('/common/menu');
@@ -61,31 +58,50 @@ const menu = async () => {
     });
 
     if (mainMenuPrompt['action'] !== 'C') {
+        let name = '';
+
+        switch (mainMenuPrompt['action']) {
+            case 'R':
+                name = 'connect_recruiter';
+                break;
+            case 'P':
+                name = 'connect_people';
+                break;
+            case 'B':
+                name = 'connect_both';
+                break;
+            case 'FR':
+                name = 'follow_recruiter';
+                break;
+            case 'FP':
+                name = 'follow_people';
+                break;
+            case 'FB':
+                name = 'follow_both';
+                break;
+            case 'ER':
+                name = 'excel_recruiter';
+                break;
+            case 'EP':
+                name = 'excel_people';
+                break;
+        }
+
+        const currentPage = await db.getData(`/common/current_pages/${name}`);
         const pagePrompt = await inquirer.prompt([
             {
                 type: 'input',
-                name: 'startPage',
-                message: 'Input start page',
-                default: '1',
-                validate: (input) => {
-                    return (input as unknown as number) > 0;
-                },
-            },
-            {
-                type: 'input',
                 name: 'endPage',
-                message: 'Input end page',
-                default: '5',
+                message: `Skip to page (current page is ${currentPage})`,
+                default: '10',
                 validate: (input) => {
                     return (input as unknown as number) > 0;
                 },
             },
         ]);
 
-        const startPage = pagePrompt['startPage'] as number;
         const endPage = pagePrompt['endPage'] as number;
-
-        await Promise.all([await db.push('/common/default_start_page', startPage, false), await db.push('/common/default_end_page', endPage, false)]);
+        await Promise.all([await db.push('/common/step', endPage, false)]);
     }
 
     await startSection(mainMenuPrompt['action']);
@@ -125,12 +141,30 @@ const startSection = async (option: string) => {
 };
 
 const clearSetting = async () => {
-    await db.push('/chromeBrowser', { path: '', profile: '' });
-    await Promise.all([await db.push('/common/default_start_page', '1', false), await db.push('/common/default_end_page', '5', false)]);
+    await Promise.all([
+        await db.push('/browser', { path: '', default: '' }, false),
+        await db.push(
+            '/common/current_pages',
+            {
+                connect_recruiter: '1',
+                connect_people: '1',
+                connect_both: '1',
+                follow_recruiter: '1',
+                follow_people: '1',
+                follow_both: '1',
+                excel_recruiter: '1',
+                excel_people: '1',
+            },
+            false
+        ),
+        await db.push('/common/step', '10', false),
+    ]);
     console.clear();
     await menu();
 };
 
 try {
-    menu();
-} catch (error) {}
+    await menu();
+} catch (error) {
+    console.log(error);
+}

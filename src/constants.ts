@@ -13,6 +13,8 @@ export default class Constants {
     public static readonly LINK_SELECTOR =
         'a[data-test-app-aware-link]:not(.scale-down):not(.artdeco-button):not(.global-nav__primary-link):not(.query-suggestions__suggestion):not(.reusable-search-simple-insight__wrapping-link):not([target="_self"])';
     public static readonly NAME_FILTER = 'Linkedin Member';
+    public static readonly SIGNIN_SELECTOR = 'div#organic-div div.header__content h1.header__content__heading';
     public static readonly PRIMARY_COLOR = 'FF0077B5';
     public static readonly FONT_COLOR = 'FFFFFFFF';
+    public static readonly WAIT_SELECTOR_TIMEOUT = 10000;
 }

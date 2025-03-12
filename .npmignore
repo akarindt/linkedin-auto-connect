@@ -11,5 +11,7 @@ yarn-error.log*
 .vscode/*
 /src
 
+/profiles
+
 tsconfig.json
 tsup.config.json
