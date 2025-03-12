@@ -192,14 +192,14 @@ export default class Excel {
                 const pages = await browser.pages();
                 if (pages.length === 1) {
                     await this.Go(browser, type);
+                    await browserInit.Close(browser);
                 }
             });
         } else {
             await newPage.close();
             await this.Go(browser, type);
+            await browserInit.Close(browser);
         }
-
-        await browserInit.Close(browser);
         return;
     }
 

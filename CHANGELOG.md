@@ -1,5 +1,11 @@
 # akari-linkedin-auto-connect
 
+## 2.1.0
+
+### Minor Changes
+
+-   Fix minor bugs
+
 ## 2.0.0
 
 ### Major Changes
